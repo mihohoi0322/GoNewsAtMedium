@@ -1,8 +1,49 @@
-## What's this?
-This file is a script created inside the Women Who Go Tokyo presentation at Go Conference 2023.
-I created it while wall-hopping on Chat GTP.
+# GoNewsAtMedium
 
-## What this code does
-This is a pickup of the 10 latest blogs on the Go language from the Medium site.
+このGo言語によるプログラムは、指定したRSSフィードから情報を取得し、その情報をSlackチャンネルに投稿します。現在は、MediumのGo関連の記事のRSSフィードを取得しています。
+プログラムはDockerコンテナとして実行することができ、そのためのDockerfileが含まれています。
 
-I added a test so that you can also run the test.
+## 特徴
+
+- MediumのGoタグが付いた記事のRSSフィードを取得します。
+- 取得した記事のタイトル、リンク、そして公開日をSlackチャンネルに投稿します。
+- 最新の5つの記事だけを取得し、投稿します。
+- Dockerコンテナとして動作します。
+
+## 使い方
+
+1. まず、あなたのSlackワークスペースからAPIトークンを取得してください。これは環境変数 `SLACK_TOKEN` に設定します。
+2. 次に、メッセージを投稿したいSlackチャンネルのIDを取得し、環境変数 `SLACK_CHANNEL_ID` に設定します。
+3. Dockerイメージをビルドします:
+
+    ```bash
+    docker build -t gonewsatmedium .
+    ```
+
+4. Dockerコンテナを実行します:
+
+    ```bash
+    docker run --env SLACK_TOKEN=your-token --env SLACK_CHANNEL_ID=your-channel-id gonewsatmedium
+    ```
+
+   このコマンドは、Mediumから最新のGo関連の記事を5つ取得し、指定したSlackチャンネルに投稿します。
+
+## 要件
+
+このプログラムを実行するには以下のライブラリが必要です:
+
+- `github.com/nlopes/slack`: Slack APIとやり取りするためのライブラリ
+- `github.com/mmcdole/gofeed`: RSSフィードを解析するためのライブラリ
+
+これらのライブラリは、`go get`コマンドを使用してインストールできます。
+
+また、Dockerがシステムにインストールされている必要があります。
+
+## 注意
+
+- APIトークンとチャンネルIDは秘密情報なので、ソースコードに直接書かないでください。代わりに環境変数を使用します。
+- 現在、このプログラムはMediumのGo関連記事のRSSフィードを取得するように設定されていますが、URLを変更することで他のRSSフィードも取得できます。
+- このプログラムはエラー処理を含んでいます。RSSフィードの取得やSlackへの投稿に失敗した場合、エラーメッセージがログに出力されます。
+- Dockerfileはマルチステージビルドを使用しています。ビルドス
+
+テージ1では、Goの依存関係をダウンロードし、アプリケーションをビルドします。ビルドステージ2では、アプリケーションの実行環境をセットアップし、ビルドしたバイナリをコピーします。これにより、最終的なイメージサイズを小さく保つことができます。
